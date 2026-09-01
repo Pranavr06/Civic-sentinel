@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../data/store';
 import { Card, Badge } from '../components/ui';
 import { Search, Filter } from 'lucide-react';
@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 
 export const Projects = () => {
   const { projects, loadCsvData } = useAppContext();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -72,7 +73,11 @@ export const Projects = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredProjects.map((project) => (
-                <tr key={project.id} className="hover:bg-gray-50">
+                <tr 
+                  key={project.id} 
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => navigate(`/project/${project.id}`)}
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-bold text-gray-900">{project.name}</div>
                     <div className="text-xs text-gray-500">{project.id}</div>
