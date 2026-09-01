@@ -4,36 +4,44 @@ import { Project, RiskFactors, RiskCategory } from '../types';
  * Calculates risk scores based on deterministic rules for the prototype.
  */
 export function calculateRisk(project: Project, index: number = 0): Project {
+  // Generate pseudo-random modifiers based on index to diversify the dummy data
+  const modDelay = Math.sin(index * 111) * 30;
+  const modCost = Math.sin(index * 222) * 30;
+  const modAnomaly = Math.sin(index * 333) * 40;
+  const modActivity = Math.sin(index * 444) * 50;
+
   const factors: RiskFactors = {
-    delay: calculateDelayRisk(project),
-    cost: calculateCostRisk(project),
-    activity: calculateActivityRisk(project),
-    financialAnomaly: calculateFinancialAnomalyRisk(project),
+    delay: Math.max(0, Math.min(100, calculateDelayRisk(project) + modDelay)),
+    cost: Math.max(0, Math.min(100, calculateCostRisk(project) + modCost)),
+    activity: Math.max(0, Math.min(100, calculateActivityRisk(project) + modActivity)),
+    financialAnomaly: Math.max(0, Math.min(100, calculateFinancialAnomalyRisk(project) + modAnomaly)),
     duplicate: calculateDuplicateRisk(project),
   };
 
   // Weighted average for overall score
-  let score = Math.round(
+  let score = 
     factors.delay * 0.3 +
     factors.cost * 0.3 +
     factors.financialAnomaly * 0.2 +
     factors.activity * 0.1 +
-    factors.duplicate * 0.1
-  );
+    factors.duplicate * 0.1;
 
   // Add organic variance so scores spread naturally across the spectrum instead of clustering at 60
   const pseudoRandom = Math.sin(index * 9999); // between -1 and 1
   
-  // Expand the distribution using a bell-curve like spread
+  // Expand the distribution using a bell-curve like spread without hard caps that create duplicates
   if (pseudoRandom > 0.8) {
-    score += 25; // Push some to Critical/High
+    score += pseudoRandom * 25; // 20 to 25
   } else if (pseudoRandom < -0.8) {
-    score -= 30; // Push some to Safe/Low
+    score -= Math.abs(pseudoRandom) * 30; // -24 to -30
   } else {
-    score += pseudoRandom * 20; // Spread the middle
+    score += pseudoRandom * 20; // -16 to +16
   }
 
-  score = Math.max(0, Math.min(100, Math.round(score)));
+  // Soft clamp to prevent exactly 100s
+  score = Math.round(score);
+  if (score >= 100) score = 99 - Math.abs(Math.sin(index * 123) * 5); // 94-99
+  score = Math.max(0, Math.round(score));
 
   const riskCategory = getRiskCategory(score);
   
