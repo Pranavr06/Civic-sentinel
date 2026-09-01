@@ -64,8 +64,18 @@ export const ContractorDashboard = () => {
                 </div>
                 <div className="text-sm text-gray-600 space-y-1">
                   <p>Location: {project.district}</p>
-                  <p>Sanctioned: ₹{project.sanctionedAmount.toLocaleString()}</p>
-                  <p>Billed so far: ₹{project.expenditure.toLocaleString()}</p>
+                  <div className="flex justify-between">
+                    <span>Sanctioned:</span>
+                    <span className="font-medium text-gray-900">₹{project.sanctionedAmount.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Billed so far:</span>
+                    <span className="font-medium text-gray-900">₹{project.expenditure.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between pt-1 border-t border-gray-100">
+                    <span className="text-indigo-600 font-medium">Pending Funds:</span>
+                    <span className="text-indigo-700 font-bold">₹{Math.max(0, project.sanctionedAmount - project.expenditure).toLocaleString()}</span>
+                  </div>
                 </div>
               </div>
             ))}

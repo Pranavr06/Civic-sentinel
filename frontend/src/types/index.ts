@@ -1,4 +1,4 @@
-export type RiskCategory = 'Low' | 'Medium' | 'High' | 'Critical';
+export type RiskCategory = 'Safe' | 'Low' | 'Medium' | 'High' | 'Critical';
 
 export interface Project {
   id: string;

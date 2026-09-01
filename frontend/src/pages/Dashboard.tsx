@@ -14,6 +14,7 @@ export const Dashboard = () => {
   const medium = projects.filter(p => p.riskCategory === 'Medium').length;
   const high = projects.filter(p => p.riskCategory === 'High').length;
   const critical = projects.filter(p => p.riskCategory === 'Critical').length;
+  const totalFlagged = low + medium + high + critical;
 
   const pieData = [
     { name: 'Low', value: low, color: '#10b981' },
@@ -29,9 +30,9 @@ export const Dashboard = () => {
     <div className="space-y-6">
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="p-5 flex flex-col justify-center">
-          <div className="text-gray-500 text-sm font-medium mb-1">Total Projects</div>
-          <div className="text-3xl font-bold text-gray-900">{total}</div>
+        <Card className="p-5 flex flex-col justify-center border-l-4 border-l-indigo-500">
+          <div className="text-gray-500 text-sm font-medium mb-1">Flagged Projects</div>
+          <div className="text-3xl font-bold text-gray-900">{totalFlagged}</div>
         </Card>
         <Card className="p-5 flex flex-col justify-center border-l-4 border-l-emerald-500">
           <div className="flex items-center text-emerald-600 text-sm font-medium mb-1">

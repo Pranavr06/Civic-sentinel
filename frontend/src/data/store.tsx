@@ -184,12 +184,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             };
         });
 
-        const evaluatedProjects = parsedProjects.map(p => calculateRisk(p));
+        const evaluatedProjects = parsedProjects.map((p, idx) => calculateRisk(p, idx));
         setProjects(evaluatedProjects);
 
         const newAlerts: Alert[] = evaluatedProjects
-          .filter(p => p.riskCategory === 'Critical' || p.riskCategory === 'High')
-          .slice(0, 15) 
+          .filter(p => p.riskCategory === 'Critical' || p.riskCategory === 'High' || p.riskCategory === 'Medium' || p.riskCategory === 'Low')
+          .slice(0, 10) 
           .map((p, index) => ({
             id: `ALT-CSV-${(index + 1).toString().padStart(3, '0')}`,
             projectId: p.id,

@@ -121,7 +121,7 @@ export const RiskCenter = () => {
                   </td>
                   <td className="p-4">
                     <button 
-                      onClick={() => navigate(`/project/${project.id}`)}
+                      onClick={() => navigate(`/alerts`)}
                       className="text-indigo-600 hover:text-indigo-900 font-medium"
                     >
                       Investigate &rarr;

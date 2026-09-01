@@ -24,6 +24,7 @@ const createIcon = (color: string) => {
 };
 
 const icons = {
+  Safe: createIcon('#3b82f6'), // blue
   Low: createIcon('#10b981'), // emerald
   Medium: createIcon('#f59e0b'), // amber
   High: createIcon('#f97316'), // orange
