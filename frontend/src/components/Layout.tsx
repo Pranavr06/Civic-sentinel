@@ -6,7 +6,8 @@ import {
   AlertTriangle, 
   Map as MapIcon, 
   BarChart3,
-  ShieldAlert
+  ShieldAlert,
+  LogOut
 } from 'lucide-react';
 import { useAppContext } from '../data/store';
 import { Role } from '../types';
@@ -14,7 +15,7 @@ import { Role } from '../types';
 export const Layout = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { role, setRole } = useAppContext();
+  const { role, setRole, logout } = useAppContext();
 
   const getNavItems = () => {
     switch(role) {
@@ -105,6 +106,17 @@ export const Layout = () => {
               <option value="Contractor">Contractor</option>
               <option value="Public">Public (Citizen)</option>
             </select>
+            
+            <button 
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              className="ml-4 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
           </div>
         </header>
 

@@ -6,6 +6,9 @@ import Papa from 'papaparse';
 interface AppState {
   role: Role;
   setRole: (role: Role) => void;
+  isAuthenticated: boolean;
+  login: (role: Role) => void;
+  logout: () => void;
   projects: Project[];
   alerts: Alert[];
   contractors: Contractor[];
@@ -25,11 +28,28 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRoleState] = useState<Role>(() => {
     return (localStorage.getItem('civic_sentinel_role') as Role) || 'Admin';
   });
+  
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('civic_sentinel_auth') === 'true';
+  });
 
   const setRole = (newRole: Role) => {
     setRoleState(newRole);
     localStorage.setItem('civic_sentinel_role', newRole);
   };
+
+  const login = (newRole: Role) => {
+    setRole(newRole);
+    setIsAuthenticated(true);
+    localStorage.setItem('civic_sentinel_auth', 'true');
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('civic_sentinel_auth');
+    // keep the role so it defaults to the last one they used on next login
+  };
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [contractors, setContractors] = useState<Contractor[]>([]);
@@ -299,7 +319,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AppContext.Provider value={{ 
-      role, setRole, projects, alerts, contractors, proposals, 
+      role, setRole, isAuthenticated, login, logout, projects, alerts, contractors, proposals, 
       updateAlertStatus, loadCsvData, addProposal, upvoteProposal, assignTender, submitBill, uploadPhoto 
     }}>
       {children}
