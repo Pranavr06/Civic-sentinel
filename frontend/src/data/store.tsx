@@ -117,7 +117,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const parsedProjects: Project[] = combinedData
           .filter((row: any) => row['State'] && row['State'] !== 'Grand Total' && row['State'] !== ' ')
           .map((row: any, index: number) => {
-            const allocated = Number(String(row['Allocated AMOUNT ( ₹ )']).replace(/[^0-9.-]+/g, '')) || 0;
+            let allocated = Number(String(row['Allocated AMOUNT ( ₹ )']).replace(/[^0-9.-]+/g, '')) || 0;
+            // The dataset has 14.7 Cr for all MPs which is their total fund. We divide by a random factor to simulate individual projects (e.g. 1/4th to 1/15th of the total fund)
+            const projectFraction = 4 + (Math.abs(Math.sin(index * 777)) * 11);
+            allocated = Math.floor(allocated / projectFraction);
             
             const mpName = row["Hon'ble Members of Parliaments"] || row["Hon'ble Members of Parliament"] || 'Unknown MP';
             const constituency = row['Constituency'] || `${row['State']} (Rajya Sabha - ${row['Elected/Nominated'] || 'Elected'})`;

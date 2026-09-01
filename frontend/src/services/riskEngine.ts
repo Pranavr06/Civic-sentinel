@@ -11,11 +11,11 @@ export function calculateRisk(project: Project, index: number = 0): Project {
   const modActivity = Math.sin(index * 444) * 50;
 
   const factors: RiskFactors = {
-    delay: Math.max(0, Math.min(100, calculateDelayRisk(project) + modDelay)),
-    cost: Math.max(0, Math.min(100, calculateCostRisk(project) + modCost)),
-    activity: Math.max(0, Math.min(100, calculateActivityRisk(project) + modActivity)),
-    financialAnomaly: Math.max(0, Math.min(100, calculateFinancialAnomalyRisk(project) + modAnomaly)),
-    duplicate: calculateDuplicateRisk(project),
+    delay: Math.round(Math.max(0, Math.min(100, calculateDelayRisk(project) + modDelay))),
+    cost: Math.round(Math.max(0, Math.min(100, calculateCostRisk(project) + modCost))),
+    activity: Math.round(Math.max(0, Math.min(100, calculateActivityRisk(project) + modActivity))),
+    financialAnomaly: Math.round(Math.max(0, Math.min(100, calculateFinancialAnomalyRisk(project) + modAnomaly))),
+    duplicate: Math.round(calculateDuplicateRisk(project)),
   };
 
   // Weighted average for overall score
