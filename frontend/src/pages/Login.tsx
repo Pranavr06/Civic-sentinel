@@ -7,7 +7,7 @@ import { Role } from '../types';
 export const Login = () => {
   const { login, role: currentRole } = useAppContext();
   const navigate = useNavigate();
-  const [selectedRole, setSelectedRole] = useState<Role>(currentRole || 'Admin');
+  const [selectedRole, setSelectedRole] = useState<Role>('Admin');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
