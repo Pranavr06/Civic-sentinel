@@ -1,5 +1,5 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, LayersControl } from 'react-leaflet';
+import React, { useEffect, useState } from 'react';
+import { MapContainer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../data/store';
 import { Card, Badge } from '../components/ui';
@@ -17,9 +17,9 @@ L.Icon.Default.mergeOptions({
 const createIcon = (color: string) => {
   return L.divIcon({
     className: 'custom-icon',
-    html: `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    html: `<div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.4);"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
   });
 };
 
@@ -34,15 +34,30 @@ const icons = {
 export const MapView = () => {
   const { projects } = useAppContext();
   const navigate = useNavigate();
+  const [geoData, setGeoData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/india.geojson')
+      .then(res => res.json())
+      .then(data => setGeoData(data))
+      .catch(err => console.error("Could not load India GeoJSON:", err));
+  }, []);
 
   // Center roughly on India
-  const center: [number, number] = [20.5937, 78.9629];
+  const center: [number, number] = [21.5937, 78.9629];
+  
+  // Strict bounds for Bharat
+  const indiaBounds: L.LatLngBoundsExpression = [
+    [6.0, 68.0], // SW
+    [37.5, 97.5] // NE
+  ];
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Geospatial Risk Intelligence</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Geospatial Risk Intelligence - Bharat</h1>
         <div className="flex space-x-3 text-sm font-medium">
+          <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-blue-500 mr-1 border border-white"></span> Safe</div>
           <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-emerald-500 mr-1 border border-white"></span> Low</div>
           <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-amber-500 mr-1 border border-white"></span> Medium</div>
           <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-orange-500 mr-1 border border-white"></span> High</div>
@@ -50,23 +65,27 @@ export const MapView = () => {
         </div>
       </div>
 
-      <Card className="flex-1 overflow-hidden relative">
-        <MapContainer center={center} zoom={5} style={{ height: '100%', width: '100%' }}>
-          <LayersControl position="topright">
-            <LayersControl.BaseLayer checked name="Satellite View (ESRI)">
-              <TileLayer
-                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-              />
-            </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="Administrative View (Light)">
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-            </LayersControl.BaseLayer>
-          </LayersControl>
-          
+      <Card className="flex-1 overflow-hidden relative border-2 border-indigo-100 bg-[#f8fafc]">
+        <MapContainer 
+          center={center} 
+          zoom={5} 
+          minZoom={4}
+          maxBounds={indiaBounds}
+          maxBoundsViscosity={1.0}
+          style={{ height: '100%', width: '100%', background: 'transparent' }}
+          zoomControl={true}
+        >
+          {geoData && (
+            <GeoJSON 
+              data={geoData} 
+              style={{
+                color: '#4f46e5', // Indigo border
+                weight: 1.5,
+                fillColor: '#e0e7ff', // Light indigo fill
+                fillOpacity: 0.6
+              }}
+            />
+          )}
           {projects.map((project) => (
             <Marker 
               key={project.id} 
