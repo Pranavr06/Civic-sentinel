@@ -126,7 +126,7 @@ export const Dashboard = () => {
                       </Badge>
                     </td>
                     <td className="px-6 py-4 text-sm font-medium">
-                      <Link to={`/project/${project.id}`} className="text-indigo-600 hover:text-indigo-900">
+                      <Link to={`/admin/project/${project.id}`} className="text-indigo-600 hover:text-indigo-900">
                         Investigate
                       </Link>
                     </td>

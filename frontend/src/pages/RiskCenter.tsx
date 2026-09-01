@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, AlertTriangle, Activity, TrendingUp, Search } from 'lucide-react';
 
 export const RiskCenter = () => {
-  const { projects } = useAppContext();
+  const { projects, role } = useAppContext();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -121,7 +121,7 @@ export const RiskCenter = () => {
                   </td>
                   <td className="p-4">
                     <button 
-                      onClick={() => navigate(`/project/${project.id}`)}
+                      onClick={() => navigate(`/${role === 'Public' ? 'citizen' : role.toLowerCase()}/project/${project.id}`)}
                       className="text-indigo-600 hover:text-indigo-900 font-medium"
                     >
                       Investigate &rarr;

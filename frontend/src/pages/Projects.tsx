@@ -6,7 +6,7 @@ import { Search, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const Projects = () => {
-  const { projects, loadCsvData } = useAppContext();
+  const { projects, loadCsvData, role } = useAppContext();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRisk, setFilterRisk] = useState('All');
@@ -73,7 +73,7 @@ export const Projects = () => {
                 <tr 
                   key={project.id} 
                   className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => navigate(`/project/${project.id}`)}
+                  onClick={() => navigate(`/${role === 'Public' ? 'citizen' : role.toLowerCase()}/project/${project.id}`)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-bold text-gray-900">{project.name}</div>
@@ -100,7 +100,7 @@ export const Projects = () => {
                     </Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Link to={`/project/${project.id}`} className="text-indigo-600 hover:text-indigo-900">
+                    <Link to={`/${role === 'Public' ? 'citizen' : role.toLowerCase()}/project/${project.id}`} className="text-indigo-600 hover:text-indigo-900">
                       View Details
                     </Link>
                   </td>

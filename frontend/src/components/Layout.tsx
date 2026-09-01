@@ -21,28 +21,28 @@ export const Layout = () => {
     switch(role) {
       case 'Public':
         return [
-          { name: 'Public Dashboard', path: '/', icon: LayoutDashboard },
-          { name: 'Propose a Project', path: '/propose', icon: FolderKanban },
+          { name: 'Public Dashboard', path: '/citizen', icon: LayoutDashboard },
+          { name: 'Propose a Project', path: '/citizen/propose', icon: FolderKanban },
         ];
       case 'Contractor':
         return [
-          { name: 'My Tenders', path: '/', icon: FolderKanban },
-          { name: 'Submit Bills', path: '/bills', icon: BarChart3 },
+          { name: 'My Tenders', path: '/contractor', icon: FolderKanban },
+          { name: 'Submit Bills', path: '/contractor/bills', icon: BarChart3 },
         ];
       case 'Authority':
         return [
-          { name: 'Tender Assignment', path: '/', icon: FolderKanban },
-          { name: 'Active Projects', path: '/projects', icon: LayoutDashboard },
+          { name: 'Tender Assignment', path: '/authority', icon: FolderKanban },
+          { name: 'Active Projects', path: '/authority/projects', icon: LayoutDashboard },
         ];
       case 'Admin':
       default:
         return [
-          { name: 'Overview', path: '/', icon: LayoutDashboard },
-          { name: 'Projects', path: '/projects', icon: FolderKanban },
-          { name: 'Risk Center', path: '/risk', icon: ShieldAlert },
-          { name: 'Map', path: '/map', icon: MapIcon },
-          { name: 'Alerts', path: '/alerts', icon: AlertTriangle },
-          { name: 'Contractors', path: '/contractors', icon: BarChart3 },
+          { name: 'Overview', path: '/admin', icon: LayoutDashboard },
+          { name: 'Projects', path: '/admin/projects', icon: FolderKanban },
+          { name: 'Risk Center', path: '/admin/risk', icon: ShieldAlert },
+          { name: 'Map', path: '/admin/map', icon: MapIcon },
+          { name: 'Alerts', path: '/admin/alerts', icon: AlertTriangle },
+          { name: 'Contractors', path: '/admin/contractors', icon: BarChart3 },
         ];
     }
   };
@@ -64,7 +64,8 @@ export const Layout = () => {
         <nav className="flex-1 py-6 px-3 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.path || (item.path !== '/' && pathname.startsWith(item.path));
+            // A link is active if it's an exact match OR if it's a parent route (e.g. /admin/projects matches /admin/projects, but not /admin)
+            const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
             return (
               <Link
                 key={item.name}
@@ -88,7 +89,7 @@ export const Layout = () => {
         {/* Header */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
           <h2 className="text-xl font-semibold text-gray-800 capitalize">
-            {navItems.find(i => pathname === i.path || (i.path !== '/' && pathname.startsWith(i.path)))?.name || 'Dashboard'}
+            {navItems.find(i => pathname === i.path || pathname.startsWith(i.path + '/'))?.name || 'Dashboard'}
           </h2>
           
           <div className="flex items-center space-x-4">
