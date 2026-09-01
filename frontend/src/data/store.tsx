@@ -21,52 +21,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
-    // Automatically load the eSAKSHI MP Allocation dataset on startup
+    // Automatically load both LS and RS datasets on startup
     const loadDefaultDataset = async () => {
       try {
-        const response = await fetch('/Allocated Limit for Honble MPs.csv');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const csvText = await response.text();
-
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const isMpAllocation = results.meta.fields?.includes("Hon'ble Members of Parliaments");
-            
-            // Map of Indian states to approximate center coordinates
-            const stateCoords: Record<string, [number, number]> = {
-              'Andhra Pradesh': [15.9129, 79.7400],
-              'Arunachal Pradesh': [28.2180, 94.7278],
-              'Assam': [26.2006, 92.9376],
-              'Bihar': [25.0961, 85.3131],
-              'Chhattisgarh': [21.2787, 81.8661],
-              'Goa': [15.2993, 74.1240],
-              'Gujarat': [22.2587, 71.1924],
-              'Haryana': [29.0588, 76.0856],
-              'Himachal Pradesh': [31.1048, 77.1734],
-              'Jharkhand': [23.6102, 85.2799],
-              'Karnataka': [15.3173, 75.7139],
-              'Kerala': [10.8505, 76.2711],
-              'Madhya Pradesh': [22.9734, 78.6569],
-              'Maharashtra': [19.7515, 75.7139],
-              'Manipur': [24.6637, 93.9063],
-              'Meghalaya': [25.4670, 91.3662],
-              'Mizoram': [23.1645, 92.9376],
-              'Nagaland': [26.1584, 94.5624],
-              'Odisha': [20.9517, 85.9000],
-              'Punjab': [31.1471, 75.3412],
-              'Rajasthan': [27.0238, 74.2179],
-              'Sikkim': [27.5330, 88.5122],
-              'Tamil Nadu': [11.1271, 78.6569],
-              'Telangana': [18.1124, 79.0193],
-              'Tripura': [23.9408, 91.9882],
-              'Uttar Pradesh': [26.8467, 80.9462],
-              'Uttarakhand': [30.0668, 79.0193],
-              'West Bengal': [22.9868, 87.8550],
-              'Andaman And Nicobar Islands': [11.7401, 92.6586],
-              'Chandigarh': [30.7333, 76.7794],
-              'The Dadra And Nagar Haveli And Daman And Diu': [20.1809, 73.0169],
         const fetchParseCsv = (url: string) => {
           return new Promise<any[]>((resolve, reject) => {
             fetch(url)
@@ -85,6 +42,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               .catch(err => reject(err));
           });
         };
+
+        const [lsData, rsData] = await Promise.all([
+          fetchParseCsv('/Allocated Limit for Honble LS MPs.csv').catch(() => []),
+          fetchParseCsv('/Allocated Limit for Honble RS MPs.csv').catch(() => [])
+        ]);
+
+        const combinedData = [...lsData, ...rsData];
 
         const stateCoords: Record<string, [number, number]> = {
           'Andhra Pradesh': [15.9129, 79.7400],
@@ -124,13 +88,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           'Lakshadweep': [10.5667, 72.6417],
           'Puducherry': [11.9416, 79.8083]
         };
-
-        const [lsData, rsData] = await Promise.all([
-          fetchParseCsv('/Allocated Limit for Honble LS MPs.csv').catch(() => []),
-          fetchParseCsv('/Allocated Limit for Honble RS MPs.csv').catch(() => [])
-        ]);
-
-        const combinedData = [...lsData, ...rsData];
 
         const parsedProjects: Project[] = combinedData
           .filter((row: any) => row['State'] && row['State'] !== 'Grand Total' && row['State'] !== ' ')
@@ -226,16 +183,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        // Check if this is the MP Allocation dataset format
         const isMpAllocation = results.meta.fields?.includes("Hon'ble Members of Parliaments");
 
         const parsedProjects: Project[] = results.data
           .filter((row: any) => row['State'] && row['State'] !== 'Grand Total' && row['State'] !== ' ')
           .map((row: any, index: number) => {
           if (isMpAllocation) {
-            // Adapt the MP-level dataset into project-level data for the prototype
             const allocated = Number(String(row['Allocated AMOUNT ( ₹ )']).replace(/[^0-9.-]+/g, '')) || 0;
-            // Generate some realistic mock progress for the demo
             const mockProgress = Math.floor(Math.random() * 100);
             const mockExpenditure = (allocated * (mockProgress + (Math.random() * 20 - 10))) / 100;
 
@@ -243,7 +197,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               id: `MPLADS-${row['State'].substring(0,2).toUpperCase()}-${index}`,
               name: `MPLADS Fund - ${row['Constituency']}`,
               state: row['State'],
-              district: row['Constituency'], // Fallback to constituency
+              district: row['Constituency'],
               constituency: row['Constituency'],
               location: 'Multiple Locations',
               workCategory: 'Constituency Development',
@@ -255,12 +209,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               progressPercentage: Math.min(100, Math.max(0, mockProgress)),
               implementingAgency: `District Authority - ${row['Constituency']}`,
               lastUpdateDate: new Date().toISOString(),
-              lat: 20.5937 + (Math.random() * 10 - 5), // Rough India bounding box randomization
+              lat: 20.5937 + (Math.random() * 10 - 5),
               lng: 78.9629 + (Math.random() * 10 - 5),
             };
           }
 
-          // Fallback to the original standard template
           return {
             id: row['Project ID'] || `CSV-${Math.random().toString(36).substr(2, 9)}`,
             name: row['Project Name'] || 'Unknown Project',
@@ -282,11 +235,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           };
         });
 
-        // Run through risk engine
         const evaluatedProjects = parsedProjects.map(p => calculateRisk(p));
         setProjects(evaluatedProjects);
 
-        // Regenerate alerts
         const newAlerts: Alert[] = evaluatedProjects
           .filter(p => p.riskCategory === 'Critical' || p.riskCategory === 'High')
           .map((p, index) => ({
