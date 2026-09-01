@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 export const PublicDashboard = () => {
   const { projects, proposals, addProposal, upvoteProposal } = useAppContext();
   const location = useLocation();
-  const isProposeTab = location.pathname === '/propose';
+  const isProposeTab = location.pathname.endsWith('/propose');
   
   const [searchTerm, setSearchTerm] = useState('');
   const [votedProposals, setVotedProposals] = useState<Set<string>>(new Set());

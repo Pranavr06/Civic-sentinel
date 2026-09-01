@@ -6,7 +6,7 @@ import { IndianRupee, Upload, Camera, FileText, CheckCircle2, Clock } from 'luci
 export const ContractorDashboard = () => {
   const { projects, submitBill, uploadPhoto } = useAppContext();
   const location = useLocation();
-  const isBillsTab = location.pathname === '/bills';
+  const isBillsTab = location.pathname.endsWith('/bills');
   
   // For demo purposes, assume we are logged in as Contractor C1
   const contractorId = 'C1';
