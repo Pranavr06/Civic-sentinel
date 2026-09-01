@@ -10,12 +10,26 @@ export const RiskCenter = () => {
 
   // Get only risky projects and sort by score descending
   const riskyProjects = projects
-    .filter(p => p.riskScore > 30)
-    .sort((a, b) => b.riskScore - a.riskScore)
+    .filter(p => (p.riskScore || 0) > 30)
+    .sort((a, b) => (b.riskScore || 0) - (a.riskScore || 0))
     .filter(p => 
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       p.district.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+  const getPrimaryRiskFactor = (project: any) => {
+    if (!project.riskFactors) return 'N/A';
+    const factors = project.riskFactors as Record<string, number>;
+    let maxFactor = '';
+    let maxValue = -1;
+    Object.entries(factors).forEach(([key, value]) => {
+      if (value > maxValue) {
+        maxValue = value;
+        maxFactor = key;
+      }
+    });
+    return maxValue > 50 ? maxFactor.replace(/([A-Z])/g, ' $1').trim().toUpperCase() : 'N/A';
+  };
 
   const criticalCount = projects.filter(p => p.riskCategory === 'Critical').length;
   const highCount = projects.filter(p => p.riskCategory === 'High').length;
@@ -97,8 +111,8 @@ export const RiskCenter = () => {
                       {project.riskScore}/100
                     </span>
                   </td>
-                  <td className="p-4 text-gray-600">
-                    {project.riskSignals.length > 0 ? project.riskSignals[0].type.replace('_', ' ') : 'N/A'}
+                  <td className="p-4 text-gray-600 font-medium">
+                    {getPrimaryRiskFactor(project)}
                   </td>
                   <td className="p-4">
                     <div className="flex items-center text-gray-500">
