@@ -9,12 +9,17 @@ export const Projects = () => {
   const { projects, loadCsvData } = useAppContext();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterRisk, setFilterRisk] = useState('All');
 
-  const filteredProjects = projects.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.district.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProjects = projects.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          p.district.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesRisk = filterRisk === 'All' || p.riskCategory === filterRisk;
+
+    return matchesSearch && matchesRisk;
+  });
 
   return (
     <div className="space-y-6">
@@ -32,9 +37,21 @@ export const Projects = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Filter className="w-4 h-4 mr-2" /> Filter
-          </button>
+          <div className="relative">
+            <select
+              className="appearance-none pl-10 pr-8 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer"
+              value={filterRisk}
+              onChange={(e) => setFilterRisk(e.target.value)}
+            >
+              <option value="All">All Risks</option>
+              <option value="Critical">Critical Risk</option>
+              <option value="High">High Risk</option>
+              <option value="Medium">Medium Risk</option>
+              <option value="Low">Low Risk</option>
+              <option value="Safe">Safe</option>
+            </select>
+            <Filter className="w-4 h-4 absolute left-3 top-2.5 text-gray-400 pointer-events-none" />
+          </div>
         </div>
       </div>
 
