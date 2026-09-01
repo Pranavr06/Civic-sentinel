@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAppContext } from '../data/store';
 import { FileText, ThumbsUp, Search, Calendar, MapPin, IndianRupee } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const PublicDashboard = () => {
   const { projects, proposals, addProposal, upvoteProposal } = useAppContext();
+  const location = useLocation();
+  const isProposeTab = location.pathname === '/propose';
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState<'projects' | 'proposals'>('projects');
   
   // Proposal form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
+  const [loc, setLoc] = useState('');
 
   const filteredProjects = projects.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -20,42 +23,31 @@ export const PublicDashboard = () => {
 
   const handleProposalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !description || !location) return;
+    if (!title || !description || !loc) return;
     
-    addProposal({ title, description, location });
+    addProposal({ title, description, location: loc });
     setTitle('');
     setDescription('');
-    setLocation('');
-    setActiveTab('proposals');
+    setLoc('');
+    alert('Proposal submitted successfully!');
   };
 
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="border-b border-gray-200 bg-gray-50 p-6 text-center">
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Public Transparency Portal</h1>
+          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
+            {isProposeTab ? 'Citizen Petitions & Proposals' : 'Public Transparency Portal'}
+          </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            View MPLADS fund allocations in your constituency, track project progress, and propose new infrastructure needs directly to the government.
+            {isProposeTab 
+              ? 'Propose new infrastructure needs directly to the government and upvote community petitions.'
+              : 'View MPLADS fund allocations in your constituency and track project progress transparently.'}
           </p>
-        </div>
-        
-        <div className="flex border-b border-gray-200">
-          <button 
-            className={`flex-1 py-4 font-medium text-center ${activeTab === 'projects' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-700' : 'text-gray-600 hover:bg-gray-50'}`}
-            onClick={() => setActiveTab('projects')}
-          >
-            Active Projects Directory
-          </button>
-          <button 
-            className={`flex-1 py-4 font-medium text-center ${activeTab === 'proposals' ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-700' : 'text-gray-600 hover:bg-gray-50'}`}
-            onClick={() => setActiveTab('proposals')}
-          >
-            Citizen Petitions & Proposals
-          </button>
         </div>
 
         <div className="p-6">
-          {activeTab === 'projects' && (
+          {!isProposeTab && (
             <div className="space-y-4">
               <div className="relative mb-6">
                 <Search className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
@@ -108,7 +100,7 @@ export const PublicDashboard = () => {
             </div>
           )}
 
-          {activeTab === 'proposals' && (
+          {isProposeTab && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-1 border-r border-gray-200 pr-6">
                 <h3 className="font-bold text-lg mb-4">Submit a Proposal</h3>
@@ -126,7 +118,7 @@ export const PublicDashboard = () => {
                     <input 
                       type="text" required
                       className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                      value={location} onChange={(e) => setLocation(e.target.value)}
+                      value={loc} onChange={(e) => setLoc(e.target.value)}
                     />
                   </div>
                   <div>
