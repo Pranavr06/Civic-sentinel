@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAppContext } from '../data/store';
 import { Card, Badge } from '../components/ui';
-import { ArrowLeft, AlertTriangle, Info, MapPin, Calendar, IndianRupee, Activity, FileText } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Info, MapPin, Calendar, IndianRupee, Activity, FileText, ShieldCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { RiskCategory } from '../types';
 
@@ -10,6 +10,7 @@ export const ProjectDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { projects } = useAppContext();
   const project = projects.find(p => p.id === id);
+  const [isReviewed, setIsReviewed] = useState(false);
 
   if (!project) {
     return <div>Project not found</div>;
@@ -76,9 +77,18 @@ export const ProjectDetails = () => {
               </div>
 
               <div className="pt-4 flex justify-end">
-                <Link to="/alerts" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm transition-colors">
-                  Take Action in Alert Center
-                </Link>
+                {isReviewed ? (
+                  <span className="inline-flex items-center text-emerald-600 bg-emerald-50 px-4 py-2 rounded-md text-sm font-bold border border-emerald-200">
+                    <ShieldCheck className="w-4 h-4 mr-2" /> Reviewed & Acknowledged
+                  </span>
+                ) : (
+                  <button 
+                    onClick={() => setIsReviewed(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm transition-colors"
+                  >
+                    Acknowledge Risk & Mark Reviewed
+                  </button>
+                )}
               </div>
             </div>
           </Card>
