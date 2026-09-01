@@ -1,0 +1,24 @@
+# Multi-Role Architecture Implementation Tasks
+
+- [x] Update Types (`src/types/index.ts`)
+  - [x] Update `Role` type
+  - [x] Add `contractorId`, `predictedCost`, `photos`, `bills` to `Project`
+  - [x] Create `CitizenProposal` and `Contractor` interfaces
+- [x] Update Store (`src/data/store.tsx`)
+  - [x] Add state for `proposals` and `contractors`
+  - [x] Seed mock contractors and AI predicted costs during CSV load
+  - [x] Add actions: `addProposal`, `upvoteProposal`, `assignTender`, `submitBill`, `uploadPhoto`
+- [x] Role Switcher UI (`src/components/Layout.tsx`)
+  - [x] Implement dropdown in header to switch context roles
+  - [x] Adjust sidebar navigation based on active role
+- [x] Implement Public Dashboard (`src/pages/PublicDashboard.tsx`)
+  - [x] Read-only project view
+  - [x] Suggestion form and Petition list
+- [x] Implement Contractor Dashboard (`src/pages/ContractorDashboard.tsx`)
+  - [x] Tender inbox
+  - [x] Photo upload and weekly bill submission forms
+- [x] Implement Authority Dashboard (`src/pages/AuthorityDashboard.tsx`)
+  - [x] Tender assignment UI
+- [x] Enhance Admin Dashboard (`src/pages/Dashboard.tsx` & `ProjectDetails.tsx`)
+  - [x] Contractor oversight and fraud/blocking UI
+- [x] Wire up new routes in `App.tsx`

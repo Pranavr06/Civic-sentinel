@@ -25,6 +25,12 @@ export interface Project {
   riskFactors?: RiskFactors;
   riskEvidence?: string[];
   recommendedAction?: string;
+
+  // Added for Multi-Role Architecture
+  contractorId?: string;
+  predictedCost?: number; // AI predicted approx cost
+  photos?: string[]; // Array of image URLs
+  bills?: Bill[]; // Array of submitted bills
 }
 
 export interface RiskFactors {
@@ -47,4 +53,29 @@ export interface Alert {
   reviewNote?: string;
 }
 
-export type Role = 'Admin' | 'District Authority' | 'Implementing Agency';
+export type Role = 'Admin' | 'Authority' | 'Contractor' | 'Public';
+
+export interface Bill {
+  id: string;
+  amount: number;
+  description: string;
+  date: string;
+}
+
+export interface Contractor {
+  id: string;
+  name: string;
+  rating: number;
+  strikes: number;
+  isBlocked: boolean;
+}
+
+export interface CitizenProposal {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  dateSubmitted: string;
+  needScore: number;
+  signatures: number;
+}

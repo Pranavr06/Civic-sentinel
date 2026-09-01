@@ -15,14 +15,37 @@ export const Layout = () => {
   const { pathname } = useLocation();
   const { role, setRole } = useAppContext();
 
-  const navItems = [
-    { name: 'Overview', path: '/', icon: LayoutDashboard },
-    { name: 'Projects', path: '/projects', icon: FolderKanban },
-    { name: 'Risk Center', path: '/risk', icon: ShieldAlert },
-    { name: 'Map', path: '/map', icon: MapIcon },
-    { name: 'Alerts', path: '/alerts', icon: AlertTriangle },
-    { name: 'Analytics', path: '/analytics', icon: BarChart3 },
-  ];
+  const getNavItems = () => {
+    switch(role) {
+      case 'Public':
+        return [
+          { name: 'Public Dashboard', path: '/', icon: LayoutDashboard },
+          { name: 'Propose a Project', path: '/propose', icon: FolderKanban },
+        ];
+      case 'Contractor':
+        return [
+          { name: 'My Tenders', path: '/', icon: FolderKanban },
+          { name: 'Submit Bills', path: '/bills', icon: BarChart3 },
+        ];
+      case 'Authority':
+        return [
+          { name: 'Tender Assignment', path: '/', icon: FolderKanban },
+          { name: 'Active Projects', path: '/projects', icon: LayoutDashboard },
+        ];
+      case 'Admin':
+      default:
+        return [
+          { name: 'Overview', path: '/', icon: LayoutDashboard },
+          { name: 'Projects', path: '/projects', icon: FolderKanban },
+          { name: 'Risk Center', path: '/risk', icon: ShieldAlert },
+          { name: 'Map', path: '/map', icon: MapIcon },
+          { name: 'Alerts', path: '/alerts', icon: AlertTriangle },
+          { name: 'Contractors', path: '/contractors', icon: BarChart3 },
+        ];
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-900">
@@ -67,15 +90,16 @@ export const Layout = () => {
           </h2>
           
           <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-500 mr-2">Prototype Role:</div>
+            <div className="text-sm font-medium text-gray-700 mr-2">Demo Role View:</div>
             <select 
               value={role}
               onChange={(e) => setRole(e.target.value as Role)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500 block p-2"
+              className="bg-indigo-50 border border-indigo-200 text-indigo-800 text-sm font-semibold rounded-md focus:ring-indigo-500 focus:border-indigo-500 block p-2"
             >
               <option value="Admin">Admin</option>
-              <option value="District Authority">District Authority</option>
-              <option value="Implementing Agency">Implementing Agency</option>
+              <option value="Authority">Authority</option>
+              <option value="Contractor">Contractor</option>
+              <option value="Public">Public (Citizen)</option>
             </select>
           </div>
         </header>
