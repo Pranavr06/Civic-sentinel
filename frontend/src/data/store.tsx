@@ -107,20 +107,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             const stateName = row['State'].trim();
             const baseCoords = stateCoords[stateName] || [22.5937, 78.9629];
 
-            let maxJitter = 1.0; 
-            const largeStates = ['Rajasthan', 'Madhya Pradesh', 'Maharashtra', 'Uttar Pradesh', 'Gujarat', 'Karnataka', 'Andhra Pradesh', 'Odisha', 'Chhattisgarh', 'Tamil Nadu', 'Telangana'];
+            let latJitterMax = 0.8;
+            let lngJitterMax = 0.8; 
+            
+            const largeInlandStates = ['Rajasthan', 'Madhya Pradesh', 'Uttar Pradesh', 'Chhattisgarh', 'Telangana'];
+            const largeCoastalStates = ['Maharashtra', 'Gujarat', 'Karnataka', 'Andhra Pradesh', 'Odisha', 'Tamil Nadu'];
             const smallStates = ['Sikkim', 'Goa', 'Tripura', 'Mizoram', 'Manipur', 'Nagaland', 'Meghalaya', 'Kerala', 'Delhi', 'Chandigarh', 'Puducherry', 'Lakshadweep', 'Andaman And Nicobar Islands'];
             
-            if (largeStates.includes(stateName)) {
-              maxJitter = 2.0; 
+            if (largeInlandStates.includes(stateName)) {
+              latJitterMax = 1.8; 
+              lngJitterMax = 1.8;
+            } else if (largeCoastalStates.includes(stateName)) {
+              // Coastal states are often long N/S but narrow E/W, so restrict E/W spread to avoid the ocean
+              latJitterMax = 1.5;
+              lngJitterMax = 0.6; 
             } else if (smallStates.includes(stateName)) {
-              maxJitter = 0.15; 
-            } else {
-              maxJitter = 0.8; 
+              latJitterMax = 0.15; 
+              lngJitterMax = 0.15;
             }
 
-            const latJitter = (Math.sin(index * 987.654) * maxJitter);
-            const lngJitter = (Math.cos(index * 456.789) * maxJitter);
+            const latJitter = (Math.sin(index * 987.654) * latJitterMax);
+            const lngJitter = (Math.cos(index * 456.789) * lngJitterMax);
 
             const lat = baseCoords[0] + latJitter;
             const lng = baseCoords[1] + lngJitter;
