@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FolderKanban, 
@@ -13,6 +13,7 @@ import { Role } from '../types';
 
 export const Layout = () => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { role, setRole } = useAppContext();
 
   const getNavItems = () => {
@@ -93,7 +94,10 @@ export const Layout = () => {
             <div className="text-sm font-medium text-gray-700 mr-2">Demo Role View:</div>
             <select 
               value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
+              onChange={(e) => {
+                setRole(e.target.value as Role);
+                navigate('/');
+              }}
               className="bg-indigo-50 border border-indigo-200 text-indigo-800 text-sm font-semibold rounded-md focus:ring-indigo-500 focus:border-indigo-500 block p-2"
             >
               <option value="Admin">Admin</option>

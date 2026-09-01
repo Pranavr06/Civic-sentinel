@@ -22,7 +22,14 @@ interface AppState {
 const AppContext = createContext<AppState | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [role, setRole] = useState<Role>('Admin');
+  const [role, setRoleState] = useState<Role>(() => {
+    return (localStorage.getItem('civic_sentinel_role') as Role) || 'Admin';
+  });
+
+  const setRole = (newRole: Role) => {
+    setRoleState(newRole);
+    localStorage.setItem('civic_sentinel_role', newRole);
+  };
   const [projects, setProjects] = useState<Project[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [contractors, setContractors] = useState<Contractor[]>([]);
