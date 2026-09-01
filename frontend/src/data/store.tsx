@@ -188,8 +188,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setProjects(evaluatedProjects);
 
         const newAlerts: Alert[] = evaluatedProjects
-          .filter(p => p.riskCategory === 'Critical' || p.riskCategory === 'High' || p.riskCategory === 'Medium' || p.riskCategory === 'Low')
-          .slice(0, 10) 
+          .filter(p => p.riskCategory === 'Critical' || p.riskCategory === 'High')
+          .sort((a, b) => (b.riskScore || 0) - (a.riskScore || 0))
+          .slice(0, 20) 
           .map((p, index) => ({
             id: `ALT-CSV-${(index + 1).toString().padStart(3, '0')}`,
             projectId: p.id,

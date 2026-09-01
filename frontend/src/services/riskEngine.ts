@@ -12,7 +12,7 @@ export function calculateRisk(project: Project, index: number = 0): Project {
     duplicate: calculateDuplicateRisk(project),
   };
 
-  // Weighted average for overall score with some pseudo-random variance so it's not all 60
+  // Weighted average for overall score
   let score = Math.round(
     factors.delay * 0.3 +
     factors.cost * 0.3 +
@@ -21,24 +21,19 @@ export function calculateRisk(project: Project, index: number = 0): Project {
     factors.duplicate * 0.1
   );
 
-  // Add variance
-  const variance = (Math.sin(index * 555) * 15);
-  score = Math.max(0, Math.min(100, score + variance));
-
-  // FORCE EXACT DISTRIBUTION for the demo: 4 Critical, 3 High, 2 Medium, 1 Low
-  if (index >= 0 && index < 4) {
-    score = 85 + (index * 3); // 85-94 (Critical)
-  } else if (index >= 4 && index < 7) {
-    score = 65 + (index * 2); // 65-71 (High)
-  } else if (index >= 7 && index < 9) {
-    score = 45 + (index * 2); // 45-49 (Medium)
-  } else if (index === 9) {
-    score = 30; // 30 (Low)
+  // Add organic variance so scores spread naturally across the spectrum instead of clustering at 60
+  const pseudoRandom = Math.sin(index * 9999); // between -1 and 1
+  
+  // Expand the distribution using a bell-curve like spread
+  if (pseudoRandom > 0.8) {
+    score += 25; // Push some to Critical/High
+  } else if (pseudoRandom < -0.8) {
+    score -= 30; // Push some to Safe/Low
   } else {
-    // Force the rest to be 'Safe' so they don't mess up the exact counts
-    score = 15 + Math.abs(Math.sin(index) * 10); // 15-25 (Safe)
+    score += pseudoRandom * 20; // Spread the middle
   }
-  score = Math.round(score);
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
 
   const riskCategory = getRiskCategory(score);
   
