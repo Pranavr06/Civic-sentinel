@@ -6,8 +6,9 @@ import { Search, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const Projects = () => {
-  const { projects } = useAppContext();
+  const { projects, loadCsvData } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const filteredProjects = projects.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -15,11 +16,31 @@ export const Projects = () => {
     p.district.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      loadCsvData(file);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">All Projects</h1>
         <div className="flex space-x-4">
+          <input 
+            type="file" 
+            accept=".csv" 
+            className="hidden" 
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+          />
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700"
+          >
+            Upload eSAKSHI Data (CSV)
+          </button>
           <div className="relative">
             <Search className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
             <input 
