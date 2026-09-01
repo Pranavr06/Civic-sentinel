@@ -20,28 +20,31 @@ export function calculateRisk(project: Project, index: number = 0): Project {
 
   // Weighted average for overall score
   let score = 
-    factors.delay * 0.3 +
-    factors.cost * 0.3 +
-    factors.financialAnomaly * 0.2 +
-    factors.activity * 0.1 +
-    factors.duplicate * 0.1;
+    factors.delay * 0.30 +
+    factors.cost * 0.30 +
+    factors.financialAnomaly * 0.20 +
+    factors.activity * 0.10 +
+    factors.duplicate * 0.10;
 
-  // Add organic variance so scores spread naturally across the spectrum instead of clustering at 60
-  const pseudoRandom = Math.sin(index * 9999); // between -1 and 1
+  // Find the highest individual risk factor
+  const maxFactor = Math.max(factors.delay, factors.cost, factors.financialAnomaly, factors.activity, factors.duplicate);
   
-  // Expand the distribution using a bell-curve like spread without hard caps that create duplicates
-  if (pseudoRandom > 0.8) {
-    score += pseudoRandom * 25; // 20 to 25
-  } else if (pseudoRandom < -0.8) {
-    score -= Math.abs(pseudoRandom) * 30; // -24 to -30
-  } else {
-    score += pseudoRandom * 20; // -16 to +16
+  // Count how many factors are critically high
+  const highFactors = Object.values(factors).filter(v => v >= 80).length;
+
+  // RULE: If any 3 or more factors are highly critical, the overall score MUST be critical
+  if (highFactors >= 3) {
+    score = Math.max(score, 88 + (Math.abs(Math.sin(index)) * 10)); // Force 88-98 range
+  } 
+  // RULE: The overall score should not be drastically lower than its single highest risk factor
+  else {
+    score = Math.max(score, maxFactor * 0.85);
   }
 
-  // Soft clamp to prevent exactly 100s
+  // Soft clamp to prevent exactly 100s, ensuring a ceiling of 99
   score = Math.round(score);
-  if (score >= 100) score = 99 - Math.abs(Math.sin(index * 123) * 5); // 94-99
-  score = Math.max(0, Math.round(score));
+  if (score >= 100) score = 99 - Math.floor(Math.abs(Math.sin(index * 123) * 5)); // 94-99
+  score = Math.max(0, score);
 
   const riskCategory = getRiskCategory(score);
   
