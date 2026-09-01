@@ -8,6 +8,7 @@ import { Alerts } from './pages/Alerts';
 
 import { Projects } from './pages/Projects';
 import { MapView } from './pages/Map';
+import { RiskCenter } from './pages/RiskCenter';
 
 const Analytics = () => <div className="p-4 flex items-center justify-center h-full text-gray-500">Analytics coming soon.</div>;
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="project/:id" element={<ProjectDetails />} />
             <Route path="alerts" element={<Alerts />} />
             <Route path="map" element={<MapView />} />
+            <Route path="risk" element={<RiskCenter />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
