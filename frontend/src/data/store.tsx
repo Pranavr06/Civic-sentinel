@@ -159,8 +159,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             const lat = baseCoords[0] + latJitter;
             const lng = baseCoords[1] + lngJitter;
 
-            // Randomly assign some projects to contractors for demo purposes
-            const cId = index % 5 === 0 ? mockContractors[index % mockContractors.length].id : undefined;
+            // Randomly assign some projects to contractors for demo purposes (distribute across C1, C2, C3, C5)
+            const activeContractors = mockContractors.filter(c => !c.isBlocked);
+            const assignToContractor = index % 3 === 0;
+            const cId = assignToContractor ? activeContractors[(Math.floor(index / 3)) % activeContractors.length].id : undefined;
 
             return {
               id: `MPLADS-${row['State'].substring(0,2).toUpperCase()}-${index.toString().padStart(4, '0')}`,
