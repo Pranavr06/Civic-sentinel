@@ -88,10 +88,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 const stateName = row['State'].trim();
                 const baseCoords = stateCoords[stateName] || [22.5937, 78.9629];
 
+                // Dynamic jitter: large states get a wide spread, small states get a tight spread
+                let maxJitter = 1.0; 
+                const largeStates = ['Rajasthan', 'Madhya Pradesh', 'Maharashtra', 'Uttar Pradesh', 'Gujarat', 'Karnataka', 'Andhra Pradesh', 'Odisha', 'Chhattisgarh', 'Tamil Nadu', 'Telangana'];
+                const smallStates = ['Sikkim', 'Goa', 'Tripura', 'Mizoram', 'Manipur', 'Nagaland', 'Meghalaya', 'Kerala', 'Delhi', 'Chandigarh', 'Puducherry', 'Lakshadweep', 'Andaman And Nicobar Islands'];
+                
+                if (largeStates.includes(stateName)) {
+                  maxJitter = 2.0; // Wide spread for big states (~200km)
+                } else if (smallStates.includes(stateName)) {
+                  maxJitter = 0.15; // Very tight spread for tiny states (~15km)
+                } else {
+                  maxJitter = 0.8; // Medium spread for border states like Bihar, WB, Punjab, Uttarakhand
+                }
+
                 // Add deterministic jitter based on index so markers in the same state don't perfectly overlap
-                // Jitter is reduced to +/- 0.25 degrees (~25km) to prevent spilling into neighboring countries
-                const latJitter = (Math.sin(index * 987.654) * 0.25);
-                const lngJitter = (Math.cos(index * 456.789) * 0.25);
+                const latJitter = (Math.sin(index * 987.654) * maxJitter);
+                const lngJitter = (Math.cos(index * 456.789) * maxJitter);
 
                 const lat = baseCoords[0] + latJitter;
                 const lng = baseCoords[1] + lngJitter;
