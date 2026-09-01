@@ -92,20 +92,12 @@ export const Layout = () => {
           </h2>
           
           <div className="flex items-center space-x-4">
-            <div className="text-sm font-medium text-gray-700 mr-2">Demo Role View:</div>
-            <select 
-              value={role}
-              onChange={(e) => {
-                setRole(e.target.value as Role);
-                navigate('/');
-              }}
-              className="bg-indigo-50 border border-indigo-200 text-indigo-800 text-sm font-semibold rounded-md focus:ring-indigo-500 focus:border-indigo-500 block p-2"
-            >
-              <option value="Admin">Admin</option>
-              <option value="Authority">Authority</option>
-              <option value="Contractor">Contractor</option>
-              <option value="Public">Public (Citizen)</option>
-            </select>
+            <div className="flex flex-col text-right mr-2">
+              <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Logged in as</span>
+              <span className="text-sm font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full mt-1 border border-indigo-100">
+                {role === 'Public' ? 'Citizen' : role}
+              </span>
+            </div>
             
             <button 
               onClick={() => {
