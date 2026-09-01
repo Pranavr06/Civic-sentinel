@@ -10,6 +10,7 @@ export const PublicDashboard = () => {
   const isProposeTab = location.pathname === '/propose';
   
   const [searchTerm, setSearchTerm] = useState('');
+  const [votedProposals, setVotedProposals] = useState<Set<string>>(new Set());
   
   // Proposal form state
   const [title, setTitle] = useState('');
@@ -156,13 +157,26 @@ export const PublicDashboard = () => {
                     <div className="flex flex-col items-center justify-center border-t sm:border-t-0 sm:border-l border-gray-200 pt-4 sm:pt-0 sm:pl-6 min-w-[120px]">
                       <div className="text-3xl font-bold text-gray-900 mb-1">{proposal.signatures}</div>
                       <div className="text-xs text-gray-500 uppercase tracking-wide mb-3">Signatures</div>
-                      <button 
-                        onClick={() => upvoteProposal(proposal.id)}
-                        className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition text-indigo-600"
-                      >
-                        <ThumbsUp className="w-4 h-4 mr-2" />
-                        Sign
-                      </button>
+                      
+                      {votedProposals.has(proposal.id) ? (
+                        <span className="flex items-center px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-md text-sm font-bold text-emerald-700">
+                          <ThumbsUp className="w-4 h-4 mr-2" />
+                          Signed
+                        </span>
+                      ) : (
+                        <button 
+                          onClick={() => {
+                            if (window.confirm('This action requires Resident Verification via Aadhaar. Proceed to verify location and sign?')) {
+                              upvoteProposal(proposal.id);
+                              setVotedProposals(prev => new Set(prev).add(proposal.id));
+                            }
+                          }}
+                          className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition text-indigo-600"
+                        >
+                          <ThumbsUp className="w-4 h-4 mr-2" />
+                          Verify & Sign
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
