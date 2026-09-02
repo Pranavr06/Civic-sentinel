@@ -46,7 +46,7 @@ export const SCurveChart = () => {
 
   const avgDrawdown = chartData[4].financial.toFixed(0);
   const avgPhys = chartData[4].physical.toFixed(0);
-  const scopeLabel = scope === 'All' ? '1a) All (Overall Country Graph)' : `${scope} (${projects.filter(p => p.state === scope).length} Schemes)`;
+  const scopeLabel = scope === 'All' ? 'All (Overall Country Graph)' : `${scope} (${projects.filter(p => p.state === scope).length} Schemes)`;
 
   return (
     <Card className="p-5 mb-6">
@@ -64,7 +64,7 @@ export const SCurveChart = () => {
             value={scope}
             onChange={(e) => setScope(e.target.value)}
           >
-            <option value="All">1a) All (Overall Country Graph)</option>
+            <option value="All">All (Overall Country Graph)</option>
             {states.map(s => {
               const count = projects.filter(p => p.state === s).length;
               return <option key={s} value={s}>{s} ({count} Schemes)</option>
