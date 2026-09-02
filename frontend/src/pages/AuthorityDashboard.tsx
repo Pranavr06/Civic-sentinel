@@ -101,7 +101,6 @@ export const AuthorityDashboard = () => {
             </table>
           </div>
         </div>
-        </div>
 
         {/* Citizen Petitions Section */}
         <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
