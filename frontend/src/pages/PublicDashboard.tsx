@@ -151,30 +151,32 @@ export const PublicDashboard = () => {
                   </h3>
                 </div>
 
-                {!isLocationVerified && (
-                  <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mb-6">
-                    <label className="block text-sm font-bold text-indigo-900 mb-2">Verify Your Location to Sign Petitions</label>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input 
-                        type="text" 
-                        placeholder="Enter your Pincode or Constituency" 
-                        className="flex-1 p-2 text-sm border border-indigo-200 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
-                        value={userLocation} 
-                        onChange={(e) => setUserLocation(e.target.value)} 
-                      />
-                      <button 
-                        className="bg-indigo-600 text-white px-4 py-2 text-sm font-bold rounded-md hover:bg-indigo-700 disabled:opacity-50" 
-                        disabled={!userLocation.trim()}
-                        onClick={() => {
+                <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mb-6">
+                  <label className="block text-sm font-bold text-indigo-900 mb-2">
+                    {isLocationVerified ? 'Viewing Petitions For:' : 'Verify Your Location to Sign Petitions'}
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Enter your Pincode or Constituency" 
+                      className="flex-1 p-2 text-sm border border-indigo-200 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
+                      value={userLocation} 
+                      onChange={(e) => setUserLocation(e.target.value)} 
+                    />
+                    <button 
+                      className="bg-indigo-600 text-white px-4 py-2 text-sm font-bold rounded-md hover:bg-indigo-700 disabled:opacity-50" 
+                      disabled={!userLocation.trim()}
+                      onClick={() => {
+                        if (!isLocationVerified) {
                           alert(`Resident verification completed for location: ${userLocation}. You may now sign petitions.`);
-                          setIsLocationVerified(true);
-                        }}
-                      >
-                        Verify Location
-                      </button>
-                    </div>
+                        }
+                        setIsLocationVerified(true);
+                      }}
+                    >
+                      {isLocationVerified ? 'Update Location' : 'Verify Location'}
+                    </button>
                   </div>
-                )}
+                </div>
                 
                 {isLocationVerified ? (
                   (() => {
