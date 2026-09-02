@@ -9,7 +9,8 @@ import {
   ShieldAlert,
   LogOut,
   Menu,
-  X
+  X,
+  FileText
 } from 'lucide-react';
 import { useAppContext } from '../data/store';
 import { Role } from '../types';
@@ -36,6 +37,7 @@ export const Layout = () => {
         return [
           { name: 'Tender Assignment', path: '/authority', icon: FolderKanban },
           { name: 'Active Projects', path: '/authority/projects', icon: LayoutDashboard },
+          { name: 'Petitions', path: '/authority/petitions', icon: FileText },
         ];
       case 'Admin':
       default:
@@ -46,6 +48,7 @@ export const Layout = () => {
           { name: 'Map', path: '/admin/map', icon: MapIcon },
           { name: 'Alerts', path: '/admin/alerts', icon: AlertTriangle },
           { name: 'Contractors', path: '/admin/contractors', icon: BarChart3 },
+          { name: 'Petitions', path: '/admin/petitions', icon: FileText },
         ];
     }
   };

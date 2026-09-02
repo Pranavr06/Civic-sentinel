@@ -12,6 +12,7 @@ import { PublicDashboard } from './pages/PublicDashboard';
 import { ContractorDashboard } from './pages/ContractorDashboard';
 import { AuthorityDashboard } from './pages/AuthorityDashboard';
 import { Contractors } from './pages/Contractors';
+import { Petitions } from './pages/Petitions';
 import { Login } from './pages/Login';
 
 const Analytics = () => <div className="p-4 flex items-center justify-center h-full text-gray-500">Analytics coming soon.</div>;
@@ -76,6 +77,7 @@ const AppRoutes = () => {
         <Route path="map" element={<MapView />} />
         <Route path="risk" element={<RiskCenter />} />
         <Route path="contractors" element={<Contractors />} />
+        <Route path="petitions" element={<Petitions />} />
       </Route>
 
       {/* AUTHORITY ROUTES */}
@@ -83,6 +85,7 @@ const AppRoutes = () => {
         <Route index element={<AuthorityDashboard />} />
         <Route path="projects" element={<Projects />} />
         <Route path="project/:id" element={<ProjectDetails />} />
+        <Route path="petitions" element={<Petitions />} />
       </Route>
 
       {/* CONTRACTOR ROUTES */}
