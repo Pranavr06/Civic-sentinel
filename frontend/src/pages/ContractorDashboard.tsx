@@ -17,6 +17,8 @@ export const ContractorDashboard = () => {
   const [billAmount, setBillAmount] = useState('');
   const [billDesc, setBillDesc] = useState('');
   const [showAiAnalysis, setShowAiAnalysis] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [uploadedBillAmount, setUploadedBillAmount] = useState<number | string>(500000);
   
   const handleBillSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +27,28 @@ export const ContractorDashboard = () => {
     setBillAmount('');
     setBillDesc('');
     alert('Bill submitted successfully to Authority.');
+  };
+
+  const runAiAnalysis = (amount: number) => {
+    setUploadedBillAmount(amount);
+    setIsAnalyzing(true);
+    setTimeout(() => {
+      setIsAnalyzing(false);
+      setShowAiAnalysis(true);
+    }, 2500); // simulate 2.5s AI scanning time
+  };
+
+  const handleManualSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProject || !billAmount) return;
+    runAiAnalysis(Number(billAmount));
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      // For demo, pretend the uploaded file had exactly ₹5,00,000 in it
+      runAiAnalysis(500000);
+    }
   };
 
   const handlePhotoUpload = () => {
@@ -103,7 +127,7 @@ export const ContractorDashboard = () => {
                 Smart Bill Submission (AI Parsed)
               </h2>
               
-              {!showAiAnalysis ? (
+              {!showAiAnalysis && !isAnalyzing ? (
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Select Project</label>
@@ -117,11 +141,12 @@ export const ContractorDashboard = () => {
                     </select>
                   </div>
                   
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition" onClick={() => setShowAiAnalysis(true)}>
+                  <label className="block border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition relative">
+                    <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".pdf,image/*" onChange={handleFileUpload} />
                     <Upload className="w-8 h-8 text-gray-400 mx-auto mb-3" />
                     <p className="text-sm font-medium text-gray-700 mb-1">Upload Bill (PDF or Image)</p>
                     <p className="text-xs text-gray-500">The AI will automatically extract and analyze the contents.</p>
-                  </div>
+                  </label>
 
                   <div className="relative flex py-5 items-center">
                       <div className="flex-grow border-t border-gray-300"></div>
@@ -129,7 +154,7 @@ export const ContractorDashboard = () => {
                       <div className="flex-grow border-t border-gray-300"></div>
                   </div>
 
-                  <form onSubmit={handleBillSubmit} className="space-y-4">
+                  <form onSubmit={handleManualSubmit} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Bill Amount (₹)</label>
                       <input 
@@ -147,9 +172,14 @@ export const ContractorDashboard = () => {
                       ></textarea>
                     </div>
                     <button type="submit" className="w-full bg-indigo-600 text-white font-medium py-2 rounded-md hover:bg-indigo-700 transition">
-                      Submit Bill to Authority
+                      Analyze & Submit Bill
                     </button>
                   </form>
+                </div>
+              ) : isAnalyzing ? (
+                <div className="py-12 flex flex-col items-center justify-center space-y-4">
+                  <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                  <p className="text-gray-600 font-medium animate-pulse">Extracting contents & running AI Analysis...</p>
                 </div>
               ) : (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -184,17 +214,27 @@ export const ContractorDashboard = () => {
                     
                     <div className="bg-gray-800 p-4 rounded-md mt-4 border border-gray-700">
                       <p className="text-white font-bold mb-2">Step 4 — Compare with uploaded bill</p>
-                      <p className="mb-1">Submitted Bill: <span className="text-red-400 font-bold">₹5,00,000</span></p>
+                      <p className="mb-1">Submitted Bill: <span className={Number(uploadedBillAmount) > 380000 ? "text-red-400 font-bold" : "text-emerald-400 font-bold"}>₹{Number(uploadedBillAmount).toLocaleString('en-IN')}</span></p>
                       <p className="mb-2">AI Expected Cost: <span className="text-emerald-400 font-bold">≈₹3,80,000</span></p>
-                      <p className="text-xs">Difference: 5,00,000 - 3,80,000 = 1,20,000</p>
+                      <p className="text-xs">Difference: {Number(uploadedBillAmount).toLocaleString('en-IN')} - 3,80,000 = {Math.abs(Number(uploadedBillAmount) - 380000).toLocaleString('en-IN')}</p>
                       
-                      <div className="bg-amber-900/50 border border-amber-700/50 text-amber-200 p-3 rounded mt-3 flex items-start">
-                        <AlertTriangle className="w-5 h-5 mr-2 shrink-0 text-amber-500" />
-                        <div>
-                          <p className="font-bold mb-1">Estimate is about 31.6% higher than the AI baseline.</p>
-                          <p className="text-xs opacity-90">The system has flagged this bill for manual verification by the authority.</p>
+                      {Number(uploadedBillAmount) > 380000 ? (
+                        <div className="bg-amber-900/50 border border-amber-700/50 text-amber-200 p-3 rounded mt-3 flex items-start">
+                          <AlertTriangle className="w-5 h-5 mr-2 shrink-0 text-amber-500" />
+                          <div>
+                            <p className="font-bold mb-1">Estimate is about {(((Number(uploadedBillAmount) - 380000) / 380000) * 100).toFixed(1)}% higher than the AI baseline.</p>
+                            <p className="text-xs opacity-90">The system has flagged this bill for manual verification by the authority.</p>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="bg-emerald-900/50 border border-emerald-700/50 text-emerald-200 p-3 rounded mt-3 flex items-start">
+                          <CheckCircle2 className="w-5 h-5 mr-2 shrink-0 text-emerald-500" />
+                          <div>
+                            <p className="font-bold mb-1">Estimate aligns with AI baseline.</p>
+                            <p className="text-xs opacity-90">This bill will be fast-tracked for approval.</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -204,13 +244,13 @@ export const ContractorDashboard = () => {
                     </button>
                     <button 
                       onClick={() => {
-                        submitBill(selectedProject, 500000, "Road construction bill (Flagged by AI)");
+                        submitBill(selectedProject, Number(uploadedBillAmount), billDesc || "AI Parsed Bill Submission");
                         setShowAiAnalysis(false);
-                        alert('Bill submitted successfully. It has been flagged for review.');
+                        alert('Bill submitted successfully.');
                       }} 
                       className="flex-1 bg-indigo-600 text-white font-medium py-2 rounded-md hover:bg-indigo-700 transition"
                     >
-                      Submit Flagged Bill
+                      Confirm & Submit
                     </button>
                   </div>
                 </div>
