@@ -181,6 +181,9 @@ export const PublicDashboard = () => {
 
                     return (
                       <>
+                        <div className="mb-4 p-3 bg-blue-50 text-blue-800 rounded text-xs font-medium border border-blue-100">
+                          <span className="font-bold">Prototype Note:</span> For demonstration purposes, if a random pincode is entered, a sample petition will be shown to illustrate the localized matching feature.
+                        </div>
                         {displayedProposals.length > 0 ? (
                           displayedProposals
                             .sort((a, b) => b.needScore - a.needScore)
