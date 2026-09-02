@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../data/store';
 import { Card, Badge } from '../components/ui';
-import { AlertTriangle, ShieldCheck, ShieldAlert, Activity, ArrowRight } from 'lucide-react';
+import { AlertTriangle, ShieldCheck, ShieldAlert, Activity, ArrowRight, FileText } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 
 export const Dashboard = () => {
-  const { projects, alerts } = useAppContext();
+  const { projects, alerts, proposals } = useAppContext();
 
   const total = projects.length;
   const low = projects.filter(p => p.riskCategory === 'Low').length;
@@ -136,6 +136,59 @@ export const Dashboard = () => {
                   <tr>
                     <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
                       No critical projects found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+
+      {/* Citizen Petitions Section */}
+      <div className="mt-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center">
+            <FileText className="w-6 h-6 mr-2 text-indigo-600" />
+            High-Priority Citizen Petitions
+          </h2>
+          <span className="text-sm text-gray-500">AI-analyzed public demand signals</span>
+        </div>
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Petition Topic</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AI Need Score</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Signatures</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {proposals.sort((a, b) => b.needScore - a.needScore).slice(0, 5).map(proposal => (
+                  <tr key={proposal.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-bold text-gray-900">{proposal.title}</div>
+                      <div className="text-xs text-gray-500 truncate max-w-xs">{proposal.description}</div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {proposal.location}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">
+                        {proposal.needScore}/100
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-bold text-gray-900">
+                      {proposal.signatures}
+                    </td>
+                  </tr>
+                ))}
+                {proposals.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                      No citizen petitions currently active.
                     </td>
                   </tr>
                 )}

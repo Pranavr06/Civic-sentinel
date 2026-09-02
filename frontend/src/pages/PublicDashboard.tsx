@@ -136,6 +136,11 @@ export const PublicDashboard = () => {
                     Submit Proposal
                   </button>
                 </form>
+                <div className="mt-6 p-4 bg-indigo-50 rounded-md border border-indigo-100">
+                  <p className="text-xs text-indigo-800 leading-relaxed font-medium">
+                    <span className="font-bold">Note:</span> The petition signed by the citizen will be analyzed through AI and will be displayed to the government journal and admin to prioritize the projects in a certain area which is highly needed.
+                  </p>
+                </div>
               </div>
               
               <div className="lg:col-span-2 space-y-4">
