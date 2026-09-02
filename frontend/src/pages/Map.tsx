@@ -32,7 +32,7 @@ const icons = {
 };
 
 export const MapView = () => {
-  const { projects } = useAppContext();
+  const { projects, role } = useAppContext();
   const navigate = useNavigate();
   const [geoData, setGeoData] = useState<any>(null);
 
@@ -105,7 +105,7 @@ export const MapView = () => {
                   </div>
                   
                   <button 
-                    onClick={() => navigate(`/project/${project.id}`)}
+                    onClick={() => navigate(`/${role === 'Public' ? 'citizen' : role.toLowerCase()}/project/${project.id}`)}
                     className="w-full text-center bg-indigo-600 text-white py-1.5 rounded text-xs font-medium hover:bg-indigo-700 transition-colors"
                   >
                     Investigate Project
