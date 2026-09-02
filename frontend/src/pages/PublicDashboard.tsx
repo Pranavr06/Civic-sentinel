@@ -171,50 +171,65 @@ export const PublicDashboard = () => {
                   </div>
                 )}
                 
-                {proposals.sort((a, b) => b.needScore - a.needScore).map(proposal => (
-                  <div key={proposal.id} className="border border-gray-200 rounded-lg p-5 flex flex-col sm:flex-row gap-4 bg-white mb-4">
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-gray-900 text-lg">{proposal.title}</h4>
-                        <span className="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">Need Score: {proposal.needScore}/100</span>
+                {isLocationVerified ? (
+                  <>
+                    {proposals.filter(p => p.location.toLowerCase().includes(userLocation.toLowerCase())).length > 0 ? (
+                      proposals
+                        .filter(p => p.location.toLowerCase().includes(userLocation.toLowerCase()))
+                        .sort((a, b) => b.needScore - a.needScore)
+                        .map(proposal => (
+                          <div key={proposal.id} className="border border-gray-200 rounded-lg p-5 flex flex-col sm:flex-row gap-4 bg-white mb-4">
+                            <div className="flex-1">
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-bold text-gray-900 text-lg">{proposal.title}</h4>
+                                <span className="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">Need Score: {proposal.needScore}/100</span>
+                              </div>
+                              <p className="text-sm text-gray-500 mb-3 flex items-center">
+                                <MapPin className="w-3 h-3 mr-1" /> {proposal.location} • Submitted {format(new Date(proposal.dateSubmitted), 'MMM d, yyyy')}
+                              </p>
+                              <p className="text-gray-700 text-sm">{proposal.description}</p>
+                            </div>
+                            <div className="flex flex-col items-center justify-center border-t sm:border-t-0 sm:border-l border-gray-200 pt-4 sm:pt-0 sm:pl-6 min-w-[120px]">
+                              <div className="text-3xl font-bold text-gray-900 mb-1">{proposal.signatures}</div>
+                              <div className="text-xs text-gray-500 uppercase tracking-wide mb-3">Signatures</div>
+                              
+                              {votedProposals.has(proposal.id) ? (
+                                <span className="flex items-center px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-md text-sm font-bold text-emerald-700">
+                                  <ThumbsUp className="w-4 h-4 mr-2" />
+                                  Signed
+                                </span>
+                              ) : (
+                                <button 
+                                  onClick={() => {
+                                    if (window.confirm(`Sign petition "${proposal.title}" as a resident of ${userLocation}?`)) {
+                                      upvoteProposal(proposal.id);
+                                      setVotedProposals(prev => new Set(prev).add(proposal.id));
+                                    }
+                                  }}
+                                  className="flex items-center px-4 py-2 border rounded-md text-sm font-medium transition bg-white border-gray-300 hover:bg-gray-50 text-indigo-600"
+                                >
+                                  <ThumbsUp className="w-4 h-4 mr-2" />
+                                  Sign Petition
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                    ) : (
+                      <div className="p-8 text-center bg-white border border-gray-200 rounded-lg">
+                        <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                        <h4 className="font-bold text-gray-900 mb-1">No Petitions Found</h4>
+                        <p className="text-sm text-gray-500">There are currently no active petitions in <span className="font-semibold text-gray-700">{userLocation}</span>. Be the first to submit a proposal for your community using the form!</p>
                       </div>
-                      <p className="text-sm text-gray-500 mb-3 flex items-center">
-                        <MapPin className="w-3 h-3 mr-1" /> {proposal.location} • Submitted {format(new Date(proposal.dateSubmitted), 'MMM d, yyyy')}
-                      </p>
-                      <p className="text-gray-700 text-sm">{proposal.description}</p>
-                    </div>
-                    <div className="flex flex-col items-center justify-center border-t sm:border-t-0 sm:border-l border-gray-200 pt-4 sm:pt-0 sm:pl-6 min-w-[120px]">
-                      <div className="text-3xl font-bold text-gray-900 mb-1">{proposal.signatures}</div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wide mb-3">Signatures</div>
-                      
-                      {votedProposals.has(proposal.id) ? (
-                        <span className="flex items-center px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-md text-sm font-bold text-emerald-700">
-                          <ThumbsUp className="w-4 h-4 mr-2" />
-                          Signed
-                        </span>
-                      ) : (
-                        <button 
-                          disabled={!isLocationVerified}
-                          title={!isLocationVerified ? "Please verify your location above first" : "Sign Petition"}
-                          onClick={() => {
-                            if (window.confirm(`Sign petition "${proposal.title}" as a resident of ${userLocation}?`)) {
-                              upvoteProposal(proposal.id);
-                              setVotedProposals(prev => new Set(prev).add(proposal.id));
-                            }
-                          }}
-                          className={`flex items-center px-4 py-2 border rounded-md text-sm font-medium transition ${
-                            isLocationVerified 
-                              ? 'bg-white border-gray-300 hover:bg-gray-50 text-indigo-600' 
-                              : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
-                          }`}
-                        >
-                          <ThumbsUp className="w-4 h-4 mr-2" />
-                          {isLocationVerified ? 'Sign Petition' : 'Loc Required'}
-                        </button>
-                      )}
-                    </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="p-10 text-center bg-gray-50 border border-dashed border-gray-300 rounded-lg">
+                    <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <h4 className="font-bold text-gray-700 mb-1">Verify Location to View Petitions</h4>
+                    <p className="text-sm text-gray-500">Please enter and verify your constituency above to see petitions relevant to your local area.</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}
