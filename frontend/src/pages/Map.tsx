@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, Marker, Popup, GeoJSON } from 'react-leaflet';
+import { MapContainer, Marker, Popup, GeoJSON, TileLayer } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../data/store';
 import { Card, Badge } from '../components/ui';
@@ -43,6 +43,8 @@ export const MapView = () => {
       .catch(err => console.error("Could not load India GeoJSON:", err));
   }, []);
 
+  const [mapStyle, setMapStyle] = useState<'default' | 'satellite'>('default');
+
   // Center roughly on India
   const center: [number, number] = [21.5937, 78.9629];
   
@@ -54,14 +56,28 @@ export const MapView = () => {
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Geospatial Risk Intelligence - Bharat</h1>
-        <div className="flex space-x-3 text-sm font-medium">
-          <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-blue-500 mr-1 border border-white"></span> Safe</div>
-          <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-emerald-500 mr-1 border border-white"></span> Low</div>
-          <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-amber-500 mr-1 border border-white"></span> Medium</div>
-          <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-orange-500 mr-1 border border-white"></span> High</div>
-          <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-rose-500 mr-1 border border-white"></span> Critical</div>
+        
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex space-x-3 text-sm font-medium bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm">
+            <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-blue-500 mr-1 border border-white"></span> Safe</div>
+            <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-emerald-500 mr-1 border border-white"></span> Low</div>
+            <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-amber-500 mr-1 border border-white"></span> Medium</div>
+            <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-orange-500 mr-1 border border-white"></span> High</div>
+            <div className="flex items-center"><span className="w-3 h-3 rounded-full bg-rose-500 mr-1 border border-white"></span> Critical</div>
+          </div>
+          
+          <button 
+            onClick={() => setMapStyle(prev => prev === 'default' ? 'satellite' : 'default')}
+            className={`px-3 py-1.5 rounded-md text-sm font-bold border transition-colors flex items-center shadow-sm ${
+              mapStyle === 'satellite' 
+                ? 'bg-indigo-600 text-white border-indigo-700' 
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            {mapStyle === 'satellite' ? 'Exit Satellite' : 'Satellite View'}
+          </button>
         </div>
       </div>
 
@@ -72,17 +88,24 @@ export const MapView = () => {
           minZoom={4}
           maxBounds={indiaBounds}
           maxBoundsViscosity={1.0}
-          style={{ height: '100%', width: '100%', background: 'transparent' }}
+          style={{ height: '100%', width: '100%', background: mapStyle === 'satellite' ? '#000' : 'transparent' }}
           zoomControl={true}
         >
+          {mapStyle === 'satellite' && (
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+            />
+          )}
+
           {geoData && (
             <GeoJSON 
               data={geoData} 
               style={{
-                color: '#4f46e5', // Indigo border
-                weight: 1.5,
-                fillColor: '#e0e7ff', // Light indigo fill
-                fillOpacity: 0.6
+                color: mapStyle === 'satellite' ? '#fbbf24' : '#4f46e5', // Yellow border for satellite, indigo for default
+                weight: mapStyle === 'satellite' ? 2 : 1.5,
+                fillColor: '#e0e7ff',
+                fillOpacity: mapStyle === 'satellite' ? 0.05 : 0.6 // Nearly transparent fill for satellite
               }}
             />
           )}
