@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../data/store';
-import { FolderKanban, Users, CheckCircle, FileText } from 'lucide-react';
+import { FolderKanban, Users, CheckCircle, FileText, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const AuthorityDashboard = () => {
@@ -80,10 +80,14 @@ export const AuthorityDashboard = () => {
                         <button 
                           onClick={() => handleAssign(project.id)}
                           disabled={!selectedContractor[project.id]}
-                          className="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                          className="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium"
                         >
                           Assign
                         </button>
+                        <label className="bg-gray-100 text-gray-600 px-2 py-1.5 rounded border border-gray-300 hover:bg-gray-200 cursor-pointer flex items-center justify-center transition" title="Upload Tender Document">
+                          <input type="file" className="hidden" onChange={() => alert('Tender document uploaded and parsed by AI successfully!')} />
+                          <Upload className="w-4 h-4" />
+                        </label>
                       </div>
                     </td>
                   </tr>
