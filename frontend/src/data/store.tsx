@@ -66,6 +66,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('civic_sentinel_proposals', JSON.stringify(proposals));
   }, [proposals]);
 
+  // Listen for changes from other tabs/windows for dual-screen demos
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'civic_sentinel_proposals' && e.newValue) {
+        setProposals(JSON.parse(e.newValue));
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   useEffect(() => {
     // Generate some mock contractors
     const mockContractors: Contractor[] = [
