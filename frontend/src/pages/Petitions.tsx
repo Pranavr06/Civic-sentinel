@@ -22,7 +22,14 @@ export const Petitions = () => {
       </div>
 
       <Card className="p-6">
-        <h2 className="text-lg font-bold mb-4">All Active Petitions</h2>
+        <div className="mb-4 border-b border-gray-100 pb-4">
+          <h2 className="text-lg font-bold mb-2">All Active Petitions</h2>
+          <div className="bg-indigo-50 p-3 rounded-md border border-indigo-100 inline-block w-full">
+            <p className="text-sm text-indigo-800 font-medium">
+              <span className="font-bold">AI Prioritization Note:</span> The priority list is automatically sorted and displayed according to the Civic Sentinel AI's analysis of the infrastructure requirements for that specific area based on public demand and risk factors.
+            </p>
+          </div>
+        </div>
         <div className="space-y-4">
           {[...proposals].sort((a, b) => b.needScore - a.needScore).map(proposal => (
             <div key={proposal.id} className="border border-gray-200 rounded-lg p-5 flex flex-col sm:flex-row gap-4 bg-white">

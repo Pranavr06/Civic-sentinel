@@ -195,6 +195,11 @@ export const Dashboard = () => {
               </tbody>
             </table>
           </div>
+          <div className="bg-indigo-50 p-3 border-t border-indigo-100">
+            <p className="text-xs text-indigo-800 font-medium text-center">
+              <span className="font-bold">Note:</span> The priority list will be displayed according to the AI analysis of the requirement of that project in that area.
+            </p>
+          </div>
         </Card>
       </div>
     </div>
