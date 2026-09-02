@@ -53,7 +53,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [contractors, setContractors] = useState<Contractor[]>([]);
-  const [proposals, setProposals] = useState<CitizenProposal[]>([]);
+  const [proposals, setProposals] = useState<CitizenProposal[]>(() => {
+    const saved = localStorage.getItem('civic_sentinel_proposals');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return [];
+  });
+
+  // Save proposals to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('civic_sentinel_proposals', JSON.stringify(proposals));
+  }, [proposals]);
 
   useEffect(() => {
     // Generate some mock contractors
@@ -71,7 +82,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       { id: 'P1', title: 'New Primary School', description: 'Our village needs a proper school building.', location: 'Rural District', dateSubmitted: new Date().toISOString(), needScore: 85, signatures: 142 },
       { id: 'P2', title: 'Road Repair', description: 'Main connecting road is full of potholes.', location: 'City Center', dateSubmitted: new Date().toISOString(), needScore: 60, signatures: 45 },
     ];
-    setProposals(mockProposals);
+    
+    setProposals(prev => prev.length > 0 ? prev : mockProposals);
 
     // Automatically load both LS and RS datasets on startup
     const loadDefaultDataset = async () => {

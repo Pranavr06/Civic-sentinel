@@ -122,7 +122,7 @@ export const AuthorityDashboard = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {proposals.sort((a, b) => b.needScore - a.needScore).slice(0, 5).map(proposal => (
+                {[...proposals].sort((a, b) => b.needScore - a.needScore).slice(0, 5).map(proposal => (
                   <tr key={proposal.id} className="hover:bg-gray-50">
                     <td className="px-4 py-4">
                       <div className="text-sm font-bold text-gray-900">{proposal.title}</div>
