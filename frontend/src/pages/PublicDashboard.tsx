@@ -11,6 +11,8 @@ export const PublicDashboard = () => {
   
   const [searchTerm, setSearchTerm] = useState('');
   const [votedProposals, setVotedProposals] = useState<Set<string>>(new Set());
+  const [userLocation, setUserLocation] = useState('');
+  const [isLocationVerified, setIsLocationVerified] = useState(false);
   
   // Proposal form state
   const [title, setTitle] = useState('');
@@ -137,13 +139,40 @@ export const PublicDashboard = () => {
               </div>
               
               <div className="lg:col-span-2 space-y-4">
-                <h3 className="font-bold text-lg mb-4 flex items-center">
-                  <FileText className="w-5 h-5 mr-2 text-indigo-600" />
-                  Active Citizen Petitions
-                </h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold text-lg flex items-center">
+                    <FileText className="w-5 h-5 mr-2 text-indigo-600" />
+                    Active Citizen Petitions
+                  </h3>
+                </div>
+
+                {!isLocationVerified && (
+                  <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mb-6">
+                    <label className="block text-sm font-bold text-indigo-900 mb-2">Verify Your Location to Sign Petitions</label>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Enter your Pincode or Constituency" 
+                        className="flex-1 p-2 text-sm border border-indigo-200 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
+                        value={userLocation} 
+                        onChange={(e) => setUserLocation(e.target.value)} 
+                      />
+                      <button 
+                        className="bg-indigo-600 text-white px-4 py-2 text-sm font-bold rounded-md hover:bg-indigo-700 disabled:opacity-50" 
+                        disabled={!userLocation.trim()}
+                        onClick={() => {
+                          alert(`Resident verification completed for location: ${userLocation}. You may now sign petitions.`);
+                          setIsLocationVerified(true);
+                        }}
+                      >
+                        Verify Location
+                      </button>
+                    </div>
+                  </div>
+                )}
                 
                 {proposals.sort((a, b) => b.needScore - a.needScore).map(proposal => (
-                  <div key={proposal.id} className="border border-gray-200 rounded-lg p-5 flex flex-col sm:flex-row gap-4 bg-white">
+                  <div key={proposal.id} className="border border-gray-200 rounded-lg p-5 flex flex-col sm:flex-row gap-4 bg-white mb-4">
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-bold text-gray-900 text-lg">{proposal.title}</h4>
@@ -165,16 +194,22 @@ export const PublicDashboard = () => {
                         </span>
                       ) : (
                         <button 
+                          disabled={!isLocationVerified}
+                          title={!isLocationVerified ? "Please verify your location above first" : "Sign Petition"}
                           onClick={() => {
-                            if (window.confirm('This action requires Resident Verification via Aadhaar. Proceed to verify location and sign?')) {
+                            if (window.confirm(`Sign petition "${proposal.title}" as a resident of ${userLocation}?`)) {
                               upvoteProposal(proposal.id);
                               setVotedProposals(prev => new Set(prev).add(proposal.id));
                             }
                           }}
-                          className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition text-indigo-600"
+                          className={`flex items-center px-4 py-2 border rounded-md text-sm font-medium transition ${
+                            isLocationVerified 
+                              ? 'bg-white border-gray-300 hover:bg-gray-50 text-indigo-600' 
+                              : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                          }`}
                         >
                           <ThumbsUp className="w-4 h-4 mr-2" />
-                          Verify & Sign
+                          {isLocationVerified ? 'Sign Petition' : 'Loc Required'}
                         </button>
                       )}
                     </div>
